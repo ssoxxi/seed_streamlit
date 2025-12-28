@@ -1,0 +1,6 @@
+cluster,n_offices,relationships,degree_level,n_founding,is_degree_level_missing,is_n_offices_missing,is_n_founding_missing,degree_level_filled,cluster,category,city,institution,success_rate
+0,1.06,1.5,,1.04,1.0,0.61,0.87,-1.0,0.0,software,new york,stanford university,0.07235284937706453
+1,1.11,4.57,2.55,2.11,0.03,0.46,0.0,2.46,1.0,software,san francisco,stanford university,0.19008264462809918
+2,1.15,1.41,1.64,1.04,0.98,0.33,0.86,-0.96,2.0,consulting,new york,waterloo university,0.057982447490385565
+3,1.06,1.18,2.12,1.03,0.96,0.49,0.83,-0.86,3.0,education,new york,pennsylvania university,0.052941176470588235
+4,1.07,1.97,0.26,1.01,1.0,0.22,0.89,-1.0,4.0,biotech,san diego,duke university,0.14090325461955006
