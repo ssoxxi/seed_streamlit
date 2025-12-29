@@ -38,10 +38,11 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("파일 구조")
     st.code("""
-03_multipage_app/
-├── seed_main.py              # 엔트리 포인트 (진입점)
-└── pages/
+seed_streamlit/
+├── seed_main.py                # 엔트리 포인트 (진입점)
+└── pages/ 
     ├── seed_home.py            # 홈 페이지 (현재)
+    ├── screening.py            # 스타트업 스크리닝 페이지
     └── recommendation.py       # 투자전략 시뮬레이션 및 추천 페이지
     """, language="text")
 
