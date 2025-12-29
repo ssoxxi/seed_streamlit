@@ -3,7 +3,7 @@
 # Streamlit App 실행 : streamlit run main.py
 
 import streamlit as st
-from theme import apply_theme # 앱 theme
+
 
 # =============================================================================
 # 앱 전체 설정 (st.set_page_config)
@@ -23,21 +23,7 @@ st.set_page_config(
     page_icon="🌱",                        # 브라우저 탭 아이콘
     layout="wide",                         # 넓은 레이아웃
     initial_sidebar_state="expanded",      # 사이드바 기본 펼침
-    menu_items={
-        'Get Help': 'https://docs.streamlit.io',
-        'Report a bug': None,              # None으로 설정하면 메뉴에서 숨김
-        'About': """
-        ## 다중 페이지 앱 실습
-        Streamlit의 `st.Page`와 `st.navigation`을 활용한 다중 페이지 앱 튜토리얼입니다.
-
-        **학습 내용**:
-        - 다중 페이지 구조 설계
-        - Session State를 통한 페이지 간 상태 공유
-        - 공통 레이아웃 구성
-        """
-    }
 )
-apply_theme()
 
 # =============================================================================
 # Streamlit 다중 페이지 앱 (Multi-Page App) 실습
