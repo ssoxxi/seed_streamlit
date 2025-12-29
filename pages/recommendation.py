@@ -283,6 +283,7 @@ with header_r:
         options=cluster_list,
         index=0,
         format_func=lambda c: f"{c}: {VC_CLUSTER_NAMES.get(int(c), 'Unknown')}",
+         key="vc_cluster",
     )
 
 # 선택 클러스터 대표 row (안전장치 포함)
@@ -319,31 +320,50 @@ with left:
     ind_col = "category" if "category" in startup_df.columns else None
     if ind_col:
         inds = sorted([x for x in startup_df[ind_col].dropna().unique()])
-        sel_inds = st.multiselect("산업 선택 (다중)", inds, default=[])
+        sel_inds = st.multiselect("산업 선택 (다중)", inds, default=[], key="sel_inds")
     else:
         sel_inds = []
 
     stages = sorted(startup_df["stage_bucket"].dropna().unique())
-    sel_stages = st.multiselect("투자 단계", stages, default=[])
+    sel_stages = st.multiselect("투자 단계", stages, default=[], key="sel_stages")
 
     if "region" in startup_df.columns:
         regions = sorted([x for x in startup_df["region"].dropna().unique()])
-        sel_regions = st.multiselect("지역", regions, default=[])
+        sel_regions = st.multiselect("지역", regions, default=[], key="sel_regions")
     else:
         sel_regions = []
+        
+    # “조건 초기화” 버튼 구현
+    def reset_filters(default_cluster: int):
+        st.session_state["vc_cluster"] = default_cluster
+        st.session_state["sel_inds"] = []
+        st.session_state["sel_stages"] = []
+        st.session_state["sel_regions"] = []
+
+    default_cluster = cluster_list[0] if len(cluster_list) else 0
+
+    st.button(
+        "조건 초기화",
+        on_click=reset_filters,
+        args=(default_cluster,),
+        width="stretch",   # use_container_width 경고 대응
+    )
+
 
 with right:
     st.markdown("### 시뮬레이션 결과")
 
     df = startup_df.copy()
 
-    # if use_vc_rules:
-    #     try:
-    #         df = apply_vc_filter(df, vc_row, vc_cluster)
-    #     except KeyError:
-    #         st.warning("선택한 클러스터의 VC_FILTER_RULES가 정의되어 있지 않습니다. 룰 딕셔너리를 추가하세요.")
-    #     except Exception as e:
-    #         st.error(f"VC 룰 적용 중 오류: {e}")
+     # 항상 VC 클러스터 룰 적용
+    try:
+        df = apply_vc_filter(df, vc_row, int(vc_cluster))
+    except KeyError:
+        st.error(f"VC_FILTER_RULES에 cluster={vc_cluster} 룰이 없습니다. 룰 딕셔너리를 추가하세요.")
+        st.stop()
+    except Exception as e:
+        st.error(f"VC 룰 적용 중 오류: {e}")
+        st.stop()
 
     if ind_col and sel_inds:
         df = df[df[ind_col].isin(sel_inds)]
@@ -458,9 +478,10 @@ with right:
 
             st.dataframe(
                 top10[["순위"] + show_cols],
-                use_container_width=True,
+                width="stretch",
                 hide_index=True
             )
+
 
             st.download_button(
                 "Top10 CSV 다운로드",
