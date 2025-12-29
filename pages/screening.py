@@ -558,21 +558,74 @@ with col_right:
 
 
     growth_pct = row.get("funding_growth_rate")
-    growth_txt = "—" if pd.isna(growth_pct) else f"{growth_pct*100:.1f}%"
+    growth_txt = "비공개" if pd.isna(growth_pct) else f"{growth_pct*100:.1f}%"
 
     # 탭: 요약 /  SHAP
     tab1, tab2 = st.tabs(["요약", "핵심요인"])
+    # =========================
+    # ✅ 요약탭 NaN → "비공개" 처리 + 출력 포맷 통일
+    # =========================
 
+    def _is_na(x) -> bool:
+        try:
+            return pd.isna(x)
+        except Exception:
+            return x is None
+
+    def fmt_int(x) -> str:
+        """NaN이면 '비공개', 아니면 정수 표시."""
+        if _is_na(x):
+            return "비공개"
+        try:
+            return str(int(float(x)))
+        except Exception:
+            return str(x)
+
+    def fmt_usd(x, digits=0, suffix=" USD") -> str:
+        """NaN이면 '비공개', 아니면 천단위 콤마 + (옵션) suffix."""
+        if _is_na(x):
+            return "비공개"
+        try:
+            x = float(x)
+            s = f"{x:,.{digits}f}" if digits > 0 else f"{x:,.0f}"
+            return s + suffix
+        except Exception:
+            return str(x)
+
+    # ---- 요약탭에서 표시할 텍스트 미리 계산 ----
+    ipo_txt = fmt_int(row.get("ipo_achieved", pd.NA))
+    mna_txt = fmt_int(row.get("mna_achieved", pd.NA))
+
+    first_raised_txt = fmt_usd(row.get("first_raised_usd", pd.NA))
+    last_raised_txt  = fmt_usd(row.get("last_raised_usd", pd.NA))
+    total_funding_txt = fmt_usd(row.get("funding_total_usd", pd.NA))
+
+    rel_txt = fmt_int(row.get("relationships", pd.NA))
+    success_txt = fmt_int(row.get("success_flag", pd.NA))
+
+    # with tab1:
+    #     st.markdown(
+    #         f"""
+    #             - IPO 달성: {ipo_txt}\n
+    #             - M&A 달성: {mna_txt}\n
+    #             - Funding 성장률(첫→마지막): {growth_txt}\n
+    #             - 첫 라운드 raised(USD): {first_raised_txt}\n
+    #             - 마지막 라운드 raised(USD): {last_raised_txt}\n
+    #             - 총 투자금(USD): {total_funding_txt}\n
+    #             - 관계규모(relationships): {rel_txt}\n
+    #             - 성공여부(success_flag): {success_txt}
+    #         """.strip()
+    #     )
     with tab1:
         st.write(
-            f"- IPO 달성: {int(row.get('ipo_achieved', 0))}\n"
-            f"- M&A 달성: {int(row.get('mna_achieved', 0))}\n"
+            f"- IPO 달성: {ipo_txt}\n"
+            f"- M&A 달성: {mna_txt}\n"
             f"- Funding 성장률(첫→마지막): {growth_txt}\n"
-            f"- 첫 라운드 raised(USD): {row.get('first_raised_usd', np.nan)}\n"
-            f"- 마지막 라운드 raised(USD): {row.get('last_raised_usd', np.nan)}\n"
-            f"- 총 투자금(USD): {row.get('funding_total_usd', 0):,.0f}\n"
-            f"- 관계규모(relationships): {row.get('relationships', 0):,.0f}\n"
-            f"- 성공여부(success_flag): {row.get('success_flag', np.nan)}"
+            f"- 첫 라운드 raised(USD): {first_raised_txt}\n"
+            f"- 마지막 라운드 raised(USD): {last_raised_txt}\n"
+            f"- 총 투자금(USD): {total_funding_txt}\n"
+            f"- 관계규모(relationships): {rel_txt}\n"
+            f"- 성공여부(success_flag): {success_txt}"
         )
 
     with tab2:
