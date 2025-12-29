@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from pathlib import Path
+from theme import apply_theme # 앱 theme
+
 st.markdown(
     """
     <style>
@@ -26,6 +28,7 @@ st.markdown(
 st.cache_data.clear()
 # st.title("💰 투자 전략 시뮬레이션")
 
+apply_theme()
 
 
 # =========================
@@ -304,10 +307,11 @@ with left:
     st.markdown(
         """
         <div style="color:#6B7280; font-size:12.8px; line-height:1.55; margin-top:-6px; margin-bottom:12px;">
-        ※ 아래 조건을 선택하면 해당 전략에 적합한 스타트업 추천 결과가 업데이트됩니다.
+        ※ 아래 조건을 선택하면 해당 전략에 적합한 스타트업 추천 결과가 업데이트됩니다.<br>
+        <b>※ 선택하신 조건에 따라 검색 결과가 없을 수 있습니다.</b> <br>
         </div>
         <div style="color:#6B7280; font-size:12.8px; line-height:1.55; margin-top:-6px; margin-bottom:12px;">
-        ※ vc 클러스터란 ? 투자 성향이 비슷한 VC들을 분석하여 유형별로 묶은 그룹 <br>
+        ※ <b>vc 클러스터란 ?</b> 투자 성향이 비슷한 VC들을 분석하여 유형별로 묶은 그룹 <br>
         선택한 VC 유형에 따라 “해당 성향의 VC가 실제로 선호했던 스타트업 특징”을 기반으로 설정됨
         </div>
         """,
@@ -476,16 +480,31 @@ with right:
             top10 = view.sort_values("success_prob", ascending=False).head(10).reset_index(drop=True)
             top10.insert(0, "순위", np.arange(1, len(top10) + 1))
 
+            # ✅ 표시용 컬럼명 한글 매핑
+            COL_KR = {
+                "objects_cfpr_id": "기업ID",
+                "category": "산업군",
+                "name": "기업명",
+                "라운드 단계": "라운드 단계",
+                "투자자 수": "투자자 수",
+                "재투자율": "재투자율",
+                "추천점수": "추천점수",
+            }
+
+            # show_cols는 원래 영문 컬럼명 기준이므로 그대로 사용하고,
+            # 출력 직전에만 rename한 display_df를 만든다.
+            display_cols = ["순위"] + show_cols
+            display_df = top10[display_cols].rename(columns=COL_KR)
+
             st.dataframe(
-                top10[["순위"] + show_cols],
+                display_df,
                 width="stretch",
                 hide_index=True
             )
 
-
             st.download_button(
                 "Top10 CSV 다운로드",
-                data=top10.to_csv(index=False).encode("utf-8-sig"),
+                data=display_df.to_csv(index=False).encode("utf-8-sig"),  # ✅ 다운로드도 한글 컬럼으로
                 file_name=f"top10_vc_cluster_{vc_cluster}.csv",
                 mime="text/csv"
             )

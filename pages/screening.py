@@ -52,6 +52,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+apply_theme()
 # =============================================================================
 # 1) 경로
 # =============================================================================
@@ -312,7 +313,7 @@ with col_left:
         ※ 원하는 스타트업 유형을 선택하여 후보군을 좁혀보세요.
         </div>
         <div style="color:#6B7280; font-size:12.8px; line-height:1.55; margin-top:-6px; margin-bottom:12px;">
-        ※ 스타트업 클러스터란 ? 비슷한 전략,단계,역량을 가진 스타트업 그룹<br> 
+        ※ <b>스타트업 클러스터란?</b> 비슷한 전략,단계,역량을 가진 스타트업 그룹<br> 
         선택한 스타트업 유형에 따라 선호하는 스타일의 기업을 찾을 수 있음
         </div>
         """,
@@ -448,9 +449,9 @@ with col_right:
             
     k1, k2, k3 = st.columns(3)
     with k1:
-        st.metric("전체 기업 수", f"{len(df_company):,}")
+        st.metric("전체 기업 수", f"{len(df_company):,}개") # 단위 추가
     with k2:
-        st.metric("필터링된 기업 수", f"{len(filtered):,}")
+        st.metric("필터 적용된 기업 수", f"{len(filtered):,}개") # 단위 추가
     with k3:
         ratio = (len(filtered) / len(df_company) * 100) if len(df_company) else 0
         st.metric("필터링 비율", f"{ratio:.1f}%")
@@ -560,7 +561,7 @@ with col_right:
     growth_txt = "—" if pd.isna(growth_pct) else f"{growth_pct*100:.1f}%"
 
     # 탭: 요약 /  SHAP
-    tab1, tab2 = st.tabs(["요약", "모델 기여도(SHAP)"])
+    tab1, tab2 = st.tabs(["요약", "핵심요인"])
 
     with tab1:
         st.write(
@@ -619,7 +620,7 @@ with col_right:
                     shap_long["abs"] = shap_long["shap_value"].abs()
                     shap_long = shap_long.sort_values("abs", ascending=False).head(15)
 
-                    st.caption("값이 +이면 모델의 '성공' 예측을 올리는 방향, -이면 낮추는 방향으로 해석합니다.")
+                    st.caption("※ +는 성공 예측을 올리는 요인, -는 내리는 요인이며, 막대가 길수록 해당 요인의 영향력이 큽니다(우선 검토 포인트로 활용).")
 
                     fig = px.bar(
                         shap_long.sort_values("shap_value"),
