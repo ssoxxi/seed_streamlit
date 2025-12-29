@@ -87,20 +87,20 @@ pg = st.navigation({
 # =============================================================================
 # [중요] 메인 파일(main.py)에 정의된 위젯은 모든 페이지에서 유지됨
 # 이를 활용하면 페이지 간 상태 공유가 쉬워짐
-with st.sidebar:
-    # [핵심] 페이지별 필터를 위한 placeholder 생성
-    # 각 페이지에서 st.session_state.sidebar_placeholder를 통해 필터 삽입 가능
-    st.session_state.sidebar_placeholder = st.empty()
+# with st.sidebar:
+#     # [핵심] 페이지별 필터를 위한 placeholder 생성
+#     # 각 페이지에서 st.session_state.sidebar_placeholder를 통해 필터 삽입 가능
+#     st.session_state.sidebar_placeholder = st.empty()
 
 
-    # Session State 현재 상태 표시
-    with st.expander("🔄 현재 Session State", expanded=False):
-        if len(st.session_state) > 0:
-            st.json({k: str(v) for k, v in st.session_state.items()})
-        else:
-            st.write("저장된 Session State가 없습니다.")
+#     # Session State 현재 상태 표시
+#     with st.expander("🔄 현재 Session State", expanded=False):
+#         if len(st.session_state) > 0:
+#             st.json({k: str(v) for k, v in st.session_state.items()})
+#         else:
+#             st.write("저장된 Session State가 없습니다.")
 
-    st.caption("© 2025 [SPARTA x SEED] Final Project App")
+#     st.caption("© 2025 [SPARTA x SEED] Final Project App")
 
 # =============================================================================
 # 선택된 페이지 실행 (필수!)
