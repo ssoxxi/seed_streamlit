@@ -365,8 +365,29 @@ with col_left:
     st.multiselect("국가 선택", options=country_opts, key="f_country")
     st.multiselect("투자 단계", options=round_opts, key="f_round")
 
-    st.slider("설립연도", min_value=y_min, max_value=y_max,
-              value=st.session_state["f_year"], step=1, key="f_year")
+    # ✅ f_year 초기값은 '없는 경우에만' 세팅
+    if "f_year" not in st.session_state:
+        st.session_state["f_year"] = (y_min, y_max)
+
+    # ✅ 슬라이더 생성: session_state에 값이 있으면 value=를 주지 않음 (경고 제거)
+    if "f_year" in st.session_state:
+        st.slider(
+            "설립연도",
+            min_value=y_min,
+            max_value=y_max,
+            step=1,
+            key="f_year",
+        )
+    else:
+        st.slider(
+            "설립연도",
+            min_value=y_min,
+            max_value=y_max,
+            value=(y_min, y_max),
+            step=1,
+            key="f_year",
+        )
+
 
     # st.slider("성공점수", min_value=float(np.floor(s_min)), max_value=float(np.ceil(s_max)),
     #           value=st.session_state["f_score"], step=0.5, key="f_score")
